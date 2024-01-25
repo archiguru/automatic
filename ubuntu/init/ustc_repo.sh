@@ -15,23 +15,24 @@ sudo apt install universal-ctags -y
 
 sudo apt-get update
 sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
+
 # step 2: 安装GPG证书
-curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
+#curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
 # Step 3: 写入软件源信息
 # 获取系统架构
-architecture=$(uname -m)
+#architecture=$(uname -m)
 
 # 判断架构类型
-if [ "$architecture" == "arm64" ]; then
-	echo "System architecture: arm64"
-elif [ "$architecture" == "amd64" ]; then
-	echo "System architecture: amd64"
-else
-	echo "Unsupported architecture: $architecture"
-	exit 1
-fi
+#if [ "$architecture" == "arm64" ]; then
+#	echo "System architecture: arm64"
+#elif [ "$architecture" == "amd64" ]; then
+#	echo "System architecture: amd64"
+#else
+#	echo "Unsupported architecture: $architecture"
+#	exit 1
+#fi
 
-sudo add-apt-repository "deb [arch=${architecture}] https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+#sudo add-apt-repository "deb [arch=$(dpkg --print-architecture)] https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
 # Step 4: 更新并安装Docker-CE
-sudo apt-get -y update
-sudo apt-get -y install docker-ce
+#sudo apt-get -y update
+# sudo apt-get -y install docker-ce
