@@ -38,7 +38,6 @@ cleanup() {
     cd "${SRC_DIR}/openresty-${OPENRESTY_VERSION}" || exit
     systemctl stop nginx.service
     systemctl disable nginx.service
-    make distclean
     cd "${SRC_DIR}" || exit
     sudo rm -rf openresty-${OPENRESTY_VERSION} openssl-${OPENSSL111_VERSION} pcre-${PCRE_VERSION} zlib-${ZLIB_VERSION}
     sudo rm -rf /var/www/default /var/log/nginx/default /var/cache/nginx /etc/nginx /etc/logrotate.d/nginx /usr/local/nginx /usr/lib/nginx /usr/sbin/nginx /run/nginx.pid /run/lock/nginx.lock /lib/systemd/system/nginx.service
@@ -137,6 +136,7 @@ install_openresty() {
     make -j "$THREADS"
     echo "*******************     开始安装     **********************"
     make install
+    make distclean
 
     # 添加启动项管理
     create_systemd_service
