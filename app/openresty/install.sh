@@ -36,7 +36,7 @@ cleanup() {
 
     set_variables
     cd "${SRC_DIR}/openresty-${OPENRESTY_VERSION}" || exit
-    sudo nginx -s stop
+    systemctl stop nginx.service
     systemctl disable nginx.service
     make distclean
     cd "${SRC_DIR}" || exit
