@@ -3,15 +3,6 @@
 
 set -e
 
-# 清理旧文件
-cleanup() {
-    set_variables
-    rm -rf openresty-${OPENRESTY_VERSION} openssl-${OPENSSL111_VERSION} pcre-${PCRE_VERSION} zlib-${ZLIB_VERSION}
-    rm -rf /var/www/default /var/log/nginx/default /var/cache/nginx /etc/nginx /etc/logrotate.d/nginx /usr/local/nginx /usr/lib/nginx /usr/sbin/nginx /run/nginx.pid /run/lock/nginx.lock /lib/systemd/system/nginx.service
-}
-
-trap cleanup ERR
-
 # 设置变量
 set_variables() {
     # 脚本目录
@@ -38,6 +29,24 @@ set_variables() {
         OPENRESTY_VERSION=$(echo "$download_page" | tr -d '\n ' | grep '最新版' | grep -oP 'openresty-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
     fi
 }
+
+# 清理旧文件
+cleanup() {
+    echo "******************    清理旧文件...     *************"
+
+    set_variables
+    cd "${SRC_DIR}/openresty-${OPENRESTY_VERSION}" || exit
+    sudo nginx -s stop
+    systemctl disable nginx.service
+    make distclean
+    cd "${SRC_DIR}" || exit
+    sudo rm -rf openresty-${OPENRESTY_VERSION} openssl-${OPENSSL111_VERSION} pcre-${PCRE_VERSION} zlib-${ZLIB_VERSION}
+    sudo rm -rf /var/www/default /var/log/nginx/default /var/cache/nginx /etc/nginx /etc/logrotate.d/nginx /usr/local/nginx /usr/lib/nginx /usr/sbin/nginx /run/nginx.pid /run/lock/nginx.lock /lib/systemd/system/nginx.service
+    systemctl daemon-reload
+    echo "******************    清理完成 ✅       *************"
+}
+
+trap cleanup ERR
 
 # 预检查
 pre_check() {
@@ -154,8 +163,9 @@ install_openresty() {
     ldconfig
     echo "*******************     启动 nginx 服务     **********************"
     systemctl daemon-reload
-
     systemctl start nginx.service
+    systemctl enable nginx.service
+    systemctl status nginx.service
 }
 
 # 配置 OpenResty
@@ -298,7 +308,14 @@ done_tips() {
 
 # 主安装函数
 main() {
-    cleanup
+    if command -v nginx &> /dev/null; then
+        echo "Nginx 已安装，开始卸载..."
+        cleanup
+        sudo apt autoremove -y
+        echo "Nginx 卸载完成"
+    else
+        echo "Nginx 未安装，无需清理"
+    fi
     set_variables
     pre_check
     create_user_group
