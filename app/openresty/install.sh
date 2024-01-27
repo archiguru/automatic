@@ -50,7 +50,7 @@ pre_check() {
     fi
 
     # 安装依赖
-    sudo apt install libpcre3 libperl-dev libpcre3-dev zlib1g zlib1g-dev libssl-dev libgeoip-dev luajit libxslt1-dev libgd-dev libreadline-dev libncurses5-dev libncursesw5-dev libmaxminddb0 libmaxminddb-dev mmdb-bin libbrotli-dev -y
+    sudo apt install build-essential libpcre3 libperl-dev libpcre3-dev zlib1g zlib1g-dev libssl-dev libgeoip-dev luajit libxslt1-dev libgd-dev libreadline-dev libncurses5-dev libncursesw5-dev libmaxminddb0 libmaxminddb-dev mmdb-bin libbrotli-dev -y
 
     # 创建目录结构
     sudo mkdir -p "${SRC_DIR}" /var/www/ /var/cache/nginx/
