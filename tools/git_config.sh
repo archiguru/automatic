@@ -3,7 +3,6 @@
 read -p "请输入用户名：" name
 read -p "请输入邮箱：" email
 
-
 git config --global user.name "$name"
 git config --global user.email "$email"
 git config --list
@@ -15,4 +14,4 @@ if [ "y" == $genKey ]; then
 	ssh-keygen -t ed25519 -C "$passphrase"
 fi
 
-exit;
+exit 0

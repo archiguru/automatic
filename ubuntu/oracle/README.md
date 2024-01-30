@@ -6,5 +6,5 @@
 bash -c "$(curl -fsSL https://gitee.com/archiguru/automatic/raw/main/ubuntu/oracle/oracle_init.sh)"
 ```
 
-### 安装
+### 安装 Nginx
 

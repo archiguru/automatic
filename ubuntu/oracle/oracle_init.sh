@@ -30,7 +30,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 bash <(wget -qO- --no-check-certificate https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/oalive.sh)
 
-touch ~/.hushlogin
+# touch ~/.hushlogin # 使用clean_login_log.sh
 
 # 安装rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
