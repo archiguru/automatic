@@ -4,8 +4,8 @@
 DEFAULT_EMAIL="jonny6015@163.com"
 
 # DNSTencent API 密钥
-export Tencent_SecretId="AKIDulX8cE77384uhMxa8cvJe1FKKHGFLPct"
-export Tencent_SecretKey="RApZFqImDjR5jUQTOE1rmmgMzZ1dKByi"
+export Tencent_SecretId="AKshddggffstj7384uhMxa8cvJe1xscsdfggj"
+export Tencent_SecretKey="RApZhdnueduhffhOE1rmmbbffhhdvjt"
 
 # Nginx SSL 目录
 NGINX_SSL_DIR="/etc/nginx/ssl"
