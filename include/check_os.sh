@@ -1,7 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 clear
-[ $(id -u) != "0" ] && { echo "${CFAILURE}错误: 你必须使用 root 用户运行此脚本 ${CEND}"; exit 1; }
+[ $(id -u) != "0" ] && {
+  echo "${CFAILURE}错误: 你必须使用 root 用户运行此脚本 ${CEND}"
+  exit 1
+}
 echo "=========  开始系统检查... ... =========="
 
 # 检测系统
@@ -26,10 +29,18 @@ fi
 
 if [ -e "/usr/bin/apt-get" ]; then
   PM=apt
-  command -v lsb_release >/dev/null 2>&1 || { apt-get -y update > /dev/null; apt-get -y install lsb-release; clear; }
+  command -v lsb_release >/dev/null 2>&1 || {
+    apt-get -y update >/dev/null
+    apt-get -y install lsb-release
+    clear
+  }
 fi
 
-command -v lsb_release >/dev/null 2>&1 || { echo "${CFAILURE}${PM} source failed! ${CEND}"; kill -9 $$; exit 1; }
+command -v lsb_release >/dev/null 2>&1 || {
+  echo "${CFAILURE}${PM} source failed! ${CEND}"
+  kill -9 $$
+  exit 1
+}
 [ -e "/etc/anolis-release" ] && { command -v lsb_release >/dev/null 2>&1 || yum -y install system-lsb-core; }
 echo "【包管理工具为】： ${PM}"
 
@@ -38,7 +49,10 @@ OS=$(lsb_release -is)
 if [[ "${OS}" =~ ^CentOS$|^CentOSStream$|^RedHat$|^Rocky$|^Fedora$|^Amazon$|^AlibabaCloud$|^AlibabaCloud\(AliyunLinux\)$|^AnolisOS$|^EulerOS$|^openEuler$ ]]; then
   LikeOS=RHEL
   RHEL_ver=$(lsb_release -rs | awk -F. '{print $1}' | awk '{print $1}')
-  [[ "${OS}" =~ ^Fedora$ ]] && [ ${RHEL_ver} -ge 19 >/dev/null 2>&1 ] && { RHEL_ver=7; Fedora_ver=$(lsb_release -rs); }
+  [[ "${OS}" =~ ^Fedora$ ]] && [ ${RHEL_ver} -ge 19 ] >/dev/null 2>&1 && {
+    RHEL_ver=7
+    Fedora_ver=$(lsb_release -rs)
+  }
   [[ "${OS}" =~ ^Amazon$|^EulerOS$|^openEuler$ ]] && RHEL_ver=7
   [[ "${OS}" =~ ^openEuler$ ]] && [[ "${RHEL_ver}" =~ ^21$ ]] && RHEL_ver=8
   [[ "${OS}" =~ ^AlibabaCloud$|^AlibabaCloud\(AliyunLinux\)$ ]] && [[ "${RHEL_ver}" =~ ^2$ ]] && RHEL_ver=7
@@ -64,15 +78,16 @@ fi
 echo "【系统类型为】： ${LikeOS}"
 
 # Check OS Version
-if [ ${RHEL_ver} -lt 6 >/dev/null 2>&1 ] || [ ${Debian_ver} -lt 8 >/dev/null 2>&1 ] || [ ${Ubuntu_ver} -lt 16 >/dev/null 2>&1 ]; then
+if [ ${RHEL_ver} -lt 6 ] >/dev/null 2>&1 || [ ${Debian_ver} -lt 8 ] >/dev/null 2>&1 || [ ${Ubuntu_ver} -lt 16 ] >/dev/null 2>&1; then
   echo "${CFAILURE}Does not support this OS, Please install CentOS 6+,Debian 8+,Ubuntu 16+ ${CEND}"
-  kill -9 $$; exit 1;
+  kill -9 $$
+  exit 1
 fi
 
-command -v gcc > /dev/null 2>&1 || $PM -y install gcc
+command -v gcc >/dev/null 2>&1 || $PM -y install gcc
 gcc_ver=$(gcc -dumpversion | awk -F. '{print $1}')
 
-[ ${gcc_ver} -lt 5 >/dev/null 2>&1 ] && redis_ver=${redis_oldver}
+[ ${gcc_ver} -lt 5 ] >/dev/null 2>&1 && redis_ver=${redis_oldver}
 
 if uname -m | grep -Eqi "arm|aarch64"; then
   armplatform="y"
@@ -93,13 +108,18 @@ fi
 
 if [ "$(getconf WORD_BIT)" == "32" ] && [ "$(getconf LONG_BIT)" == "64" ]; then
   OS_BIT=64
-  SYS_BIT_j=x64 #jdk
+  SYS_BIT_j=x64    #jdk
   SYS_BIT_a=x86_64 #mariadb
   SYS_BIT_b=x86_64 #mariadb
   SYS_BIT_c=x86_64 #ZendGuardLoader
   SYS_BIT_d=x86-64 #ioncube
-  SYS_BIT_n=x64 #node
-  [ "${TARGET_ARCH}" == 'aarch64' ] && { SYS_BIT_j=aarch64; SYS_BIT_c=aarch64; SYS_BIT_d=aarch64; SYS_BIT_n=arm64; }
+  SYS_BIT_n=x64    #node
+  [ "${TARGET_ARCH}" == 'aarch64' ] && {
+    SYS_BIT_j=aarch64
+    SYS_BIT_c=aarch64
+    SYS_BIT_d=aarch64
+    SYS_BIT_n=arm64
+  }
 else
   OS_BIT=32
   SYS_BIT_j=i586
@@ -108,19 +128,24 @@ else
   SYS_BIT_c=i386
   SYS_BIT_d=x86
   SYS_BIT_n=x86
-  [ "${TARGET_ARCH}" == 'armv7' ] && { SYS_BIT_j=arm32-vfp-hflt; SYS_BIT_c=armhf; SYS_BIT_d=armv7l; SYS_BIT_n=armv7l; }
+  [ "${TARGET_ARCH}" == 'armv7' ] && {
+    SYS_BIT_j=arm32-vfp-hflt
+    SYS_BIT_c=armhf
+    SYS_BIT_d=armv7l
+    SYS_BIT_n=armv7l
+  }
 fi
 
 THREAD=$(grep 'processor' /proc/cpuinfo | sort -u | wc -l)
 
 # Percona binary: https://www.percona.com/doc/percona-server/5.7/installation.html#installing-percona-server-from-a-binary-tarball
-if [ ${Debian_ver} -lt 9 >/dev/null 2>&1 ]; then
+if [ ${Debian_ver} -lt 9 ] >/dev/null 2>&1; then
   sslLibVer=ssl100
 elif [[ "${RHEL_ver}" =~ ^[6-7]$ ]] && [ "${OS}" != 'Fedora' ]; then
   sslLibVer=ssl101
-elif [ ${Debian_ver} -ge 9 >/dev/null 2>&1 ] || [ ${Ubuntu_ver} -ge 16 >/dev/null 2>&1 ]; then
+elif [ ${Debian_ver} -ge 9 ] >/dev/null 2>&1 || [ ${Ubuntu_ver} -ge 16 ] >/dev/null 2>&1; then
   sslLibVer=ssl102
-elif [ ${Fedora_ver} -ge 27 >/dev/null 2>&1 ]; then
+elif [ ${Fedora_ver} -ge 27 ] >/dev/null 2>&1; then
   sslLibVer=ssl102
 elif [ "${RHEL_ver}" == '8' ]; then
   sslLibVer=ssl1:111
@@ -130,19 +155,19 @@ fi
 
 ## 设定 OS_ID
 if [[ "${OS}" =~ ^CentOS$ ]]; then
-    OS_ID="centos"
+  OS_ID="centos"
 elif [[ "${OS}" =~ ^Debian$|^Deepin$|^Uos$|^Kali$ ]]; then
-    OS_ID="debian"
+  OS_ID="debian"
 elif [[ "${OS}" =~ ^Fedora$ ]]; then
-    OS_ID="fedora"
+  OS_ID="fedora"
 elif [[ "${OS}" =~ ^raspbian$ ]]; then
-    OS_ID="raspbian"
+  OS_ID="raspbian"
 elif [[ "${OS}" =~ ^RedHat$|^Rocky$|^Fedora$|^Amazon$|^AlibabaCloud$|^AlibabaCloud\(AliyunLinux\)$|^AnolisOS$|^EulerOS$|^openEuler$ ]]; then
-    OS_ID="rhel"
+  OS_ID="rhel"
 elif [[ "${OS}" =~ ^Ubuntu$|^LinuxMint$|^elementary$ ]]; then
-    OS_ID="ubuntu"
+  OS_ID="ubuntu"
 else
-    OS_ID=""
+  OS_ID=""
 fi
 
 # 设定 OS_CNAME
@@ -154,5 +179,3 @@ echo "     系统检查完成！"
 echo "==============================="
 
 ${PM} install -y git zsh wget unzip screen ufw gnupg2 jq
-
-

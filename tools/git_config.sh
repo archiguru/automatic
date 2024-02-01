@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 read -p "请输入用户名：" name
 read -p "请输入邮箱：" email

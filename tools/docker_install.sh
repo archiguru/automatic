@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
-cd ~ 
+#!/bin/bash
+cd ~
 # 前置检查
-curl -fsSL https://gitee.com/jonnyhub/automatic/raw/master/include/check_os.sh > ./check_os.sh && chmod +x check_os.sh
+curl -fsSL https://gitee.com/jonnyhub/automatic/raw/master/include/check_os.sh >./check_os.sh && chmod +x check_os.sh
 . ~/check_os.sh
 ###############   可用变量   ###############
 # 【包管理工具为】： ${PM}     如: apt
@@ -74,6 +74,5 @@ elif [ "${OS}" == "CentOS" ]; then
     # VPC网络：
     # sudo yum-config-manager --add-repo http://mirrors.could.aliyuncs.com/docker-ce/linux/${OS_ID}/docker-ce.repo
 else
-    exit 1;
-fi 
-
+    exit 1
+fi

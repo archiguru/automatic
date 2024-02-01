@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/bash
 ### OpenResty 安装脚本
 
 set -e
@@ -316,7 +316,7 @@ done_tips() {
 
 # 主安装函数
 main() {
-    if command -v nginx &> /dev/null; then
+    if command -v nginx &>/dev/null; then
         echo "Nginx 已安装，开始卸载..."
         cleanup
         sudo apt autoremove -y

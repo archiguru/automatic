@@ -1,12 +1,12 @@
-#!/usr/bin/env bash
-cd ~ 
+#!/bin/bash
+cd ~
 
 # 创建/data/gitea相关目录
 mkdir -p /data/gitea/mariadb
 mkdir -p /data/gitea/data
 
 # 在/data/gitea目录下创建docker-compose.yml文件
-cat > /data/gitea/docker-compose.yml <<EOF
+cat >/data/gitea/docker-compose.yml <<EOF
 version: '3'
 services:
   gitea:
