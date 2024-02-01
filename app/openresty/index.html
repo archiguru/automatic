@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to NGINX</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+        color: #333;
+      }
+      .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      h1 {
+        color: #007bff;
+      }
+      .info {
+        margin-top: 20px;
+        text-align: left;
+      }
+      .info-item {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+      }
+      .info-item span {
+        font-weight: bold;
+        margin-right: 5px;
+        min-width: 16px;
+        flex-shrink: 0;
+      }
+      .info-item .highlight {
+        color: #007bff;
+      }
+      .copy-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .copy-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to NGINX</h1>
+      <br />
+      <p>感谢您使用 Nginx !</p>
+      <br />
+      <hr />
+      <br />
+      <div class="info">
+        <div class="info-item">
+          <span>⚠️</span>
+          Nginx 配置文件目录: <span class="highlight">/etc/nginx/</span>
+          <button class="copy-button" onclick="copyText('/etc/nginx/')">
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          <span>⚠️</span>
+          网站文件和内容存储目录: <span class="highlight">/var/www/</span>
+          <button class="copy-button" onclick="copyText('/var/www/')">
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          <span>⚠️</span>
+          Nginx 日志文件目录: <span class="highlight">/var/log/nginx/</span>
+          <button class="copy-button" onclick="copyText('/var/log/nginx/')">
+            复制
+          </button>
+        </div>
+        <br />
+        <hr />
+        <div class="info-item">
+          Nginx 缓存文件目录: <span class="highlight">/var/cache/nginx</span>
+          <button class="copy-button" onclick="copyText('/var/cache/nginx')">
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          Nginx 安装主目录: <span class="highlight">/usr/local/nginx</span>
+          <button class="copy-button" onclick="copyText('/usr/local/nginx')">
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          Nginx 附加库目录: <span class="highlight">/usr/lib/nginx</span>
+          <button class="copy-button" onclick="copyText('/usr/lib/nginx')">
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          Nginx 可执行文件路径: <span class="highlight">/usr/sbin/nginx</span>
+          <button class="copy-button" onclick="copyText('/usr/sbin/nginx')">
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          Nginx 运行时 PID 文件路径:
+          <span class="highlight">/run/nginx.pid</span>
+          <button class="copy-button" onclick="copyText('/run/nginx.pid')">
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          Nginx 运行时锁文件路径:
+          <span class="highlight">/run/lock/nginx.lock</span>
+          <button
+            class="copy-button"
+            onclick="copyText('/run/lock/nginx.lock')"
+          >
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          Nginx 日志轮转配置文件:
+          <span class="highlight">/etc/logrotate.d/nginx</span>
+          <button
+            class="copy-button"
+            onclick="copyText('/etc/logrotate.d/nginx')"
+          >
+            复制
+          </button>
+        </div>
+        <div class="info-item">
+          Nginx systemd 服务配置文件:
+          <span class="highlight">/lib/systemd/system/nginx.service</span>
+          <button class="copy-button" onclick="copyText('/var/log/nginx/')">
+            复制
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function copyText(text) {
+        const input = document.createElement("input");
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        document.body.removeChild(input);
+        alert("已复制目录路径：" + text);
+      }
+    </script>
+  </body>
+</html>
