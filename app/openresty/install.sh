@@ -161,6 +161,9 @@ install_openresty() {
     # 配置 logrotate
     configure_logrotate
 
+    sudo mkdir -p /var/www/default
+    wget -O /var/www/default/index.html https://gitee.com/archiguru/automatic/raw/main/app/openresty/index.html
+
     # 设置权限
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} /var/www/ /var/log/nginx/ /var/cache/nginx/ /etc/nginx/ /etc/logrotate.d/nginx /usr/local/nginx/ /usr/lib/nginx/
 
