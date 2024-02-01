@@ -1,83 +1,94 @@
 #!/bin/bash
-### OpenResty 安装脚本
+#****************************************
+# Author: ArchiGuru
+# Created Time :2024-01-30 16:34
+# File Name: nginx_install.sh
+# Description:
+#****************************************
 
 set -e
 
-# 设置变量
-set_variables() {
-    # 脚本目录
-    SCRIPT_DIR="/root/nginx"
-    # 源码目录
-    SRC_DIR="/data/src"
-    # Web 目录
-    WEB_DIR="/var/www"
-    # 安装目录
-    INSTALL_DIR="${SRC_DIR}/openresty-${OPENRESTY_VERSION}"
-    # 用户和组
-    NGINX_GROUP="nginx" # OpenResty 运行的组
-    NGINX_USER="nginx"  # OpenResty 运行的用户
-    # 版本
-    OPENRESTY_VERSION="latest"
-    OPENSSL111_VERSION="1.1.1w"
-    PCRE_VERSION="8.45"
-    ZLIB_VERSION="1.3.1"
-    # 获取 CPU 线程数
-    THREADS=$(grep -c ^processor /proc/cpuinfo)
-    # 获取 OpenResty 版本号
-    if [[ "$OPENRESTY_VERSION" = "latest" ]]; then
-        local download_page=$(curl -s https://openresty.org/cn/download.html)
-        OPENRESTY_VERSION=$(echo "$download_page" | tr -d '\n ' | grep '最新版' | grep -oP 'openresty-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
-    fi
-}
+# 设置全局变量
+SCRIPT_DIR="/root/nginx"
+SRC_DIR="/data/src"
+WEB_DIR="/var/www"
+NGINX_GROUP="nginx"
+NGINX_USER="nginx"
+OPENSSL111_VERSION="1.1.1w"
+PCRE_VERSION="8.45"
+ZLIB_VERSION="1.3.1"
+THREADS=$(grep -c ^processor /proc/cpuinfo)
+OPENRESTY_VERSION=$(curl -s https://openresty.org/cn/download.html | grep -oP 'openresty-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
+INSTALL_DIR="${SRC_DIR}/openresty-${OPENRESTY_VERSION}"
 
 # 清理旧文件
 cleanup() {
     echo "******************    清理旧文件...     *************"
-
-    set_variables
-    cd "${SRC_DIR}/openresty-${OPENRESTY_VERSION}" || exit
-    systemctl stop nginx.service
-    systemctl disable nginx.service
-    cd "${SRC_DIR}" || exit
-    sudo rm -rf openresty-${OPENRESTY_VERSION} openssl-${OPENSSL111_VERSION} pcre-${PCRE_VERSION} zlib-${ZLIB_VERSION}
-    sudo rm -rf /var/www/default /var/log/nginx/default /var/cache/nginx /etc/nginx /etc/logrotate.d/nginx /usr/local/nginx /usr/lib/nginx /usr/sbin/nginx /run/nginx.pid /run/lock/nginx.lock /lib/systemd/system/nginx.service
+    # 使用全局变量
+    if [ -d "${INSTALL_DIR}" ]; then
+        cd "${INSTALL_DIR}"
+        make clean || true
+        echo "清理成功，make clean 完成"
+    else
+        echo "安装目录不存在，无需清理。"
+    fi
+    if systemctl is-active --quiet nginx.service; then
+        systemctl stop nginx.service || true
+    fi
+    cd ${HOME} || true
+    sudo rm -rf "${INSTALL_DIR}" "${SRC_DIR}/openssl-${OPENSSL111_VERSION}" "${SRC_DIR}/pcre-${PCRE_VERSION}" "${SRC_DIR}/zlib-${ZLIB_VERSION}"
+    if [ -f "/lib/systemd/system/nginx.service" ]; then
+        systemctl disable nginx.service
+    fi
     systemctl daemon-reload
+    if id "$NGINX_USER" &>/dev/null; then
+        sudo userdel "$NGINX_USER" || true # 删除 nginx 用户，忽略可能出现的错误
+    else
+        echo "用户 $NGINX_USER 不存在。跳过用户删除。"
+    fi
+
+    if grep -q "^${NGINX_GROUP}:" /etc/group; then
+        sudo groupdel "$NGINX_GROUP" || true # 删除 nginx 用户组，忽略可能出现的错误
+    else
+        echo "用户组 $NGINX_GROUP 不存在。跳过用户组删除。"
+    fi
     echo "******************    清理完成 ✅       *************"
 }
 
-trap cleanup ERR
+# 错误处理
+error_handler() {
+    echo "发生错误，请检查日志文件以获取更多信息，清理临时文件"
+    cleanup
+}
+
+trap error_handler ERR
+
+# 终止占用锁文件的进程
+terminate_apt_process() {
+    sudo rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock* || true
+    sudo dpkg --configure -a
+}
 
 # 预检查
 pre_check() {
-    set_variables
-
-    # 使用 sudo 权限检查
+    terminate_apt_process
     if ! sudo apt update -y; then
         echo "apt 更新失败。"
         exit 1
     fi
-
-    # 安装依赖
     sudo apt install build-essential libpcre3 libperl-dev libpcre3-dev zlib1g zlib1g-dev libssl-dev libgeoip-dev luajit libxslt1-dev libgd-dev libreadline-dev libncurses5-dev libncursesw5-dev libmaxminddb0 libmaxminddb-dev mmdb-bin libbrotli-dev -y
-
-    # 创建目录结构
     sudo mkdir -p "${SRC_DIR}" /var/www/ /var/cache/nginx/
     sudo touch /etc/logrotate.d/nginx
 }
 
 # 创建用户和用户组
 create_user_group() {
-    set_variables
-
-    # 创建 nginx 用户组，如果不存在
     sudo groupadd -f ${NGINX_GROUP}
-    # 创建 nginx 用户，如果不存在
     id -u ${NGINX_USER} &>/dev/null || sudo useradd -r -g ${NGINX_GROUP} -s /sbin/nologin -d /usr/local/nginx -c "OpenResty nginx web server" ${NGINX_USER}
 }
 
 # 下载文件
 download_file() {
-    set_variables
     cd ${SRC_DIR} || exit
     local url=$1
     local file_dir=$2
@@ -93,25 +104,19 @@ download_file() {
 
 # 通用函数：下载源码
 download_source() {
-    set_variables
     cd ${SRC_DIR} || exit
-
     # 下载 OpenResty 源码
     openresty_url="https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz"
     download_file "$openresty_url" "openresty-${OPENRESTY_VERSION}"
-
     # 下载 OpenSSL 源码
     openssl_url="https://www.openssl.org/source/openssl-${OPENSSL111_VERSION}.tar.gz"
     download_file "$openssl_url" "openssl-${OPENSSL111_VERSION}"
-
     # 下载 PCRE 源码
     pcre_url="https://ftp.exim.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz"
     download_file "$pcre_url" "pcre-${PCRE_VERSION}"
-
     # 下载 zlib 源码
     zlib_url="https://www.zlib.net/zlib-${ZLIB_VERSION}.tar.gz"
     download_file "$zlib_url" "zlib-${ZLIB_VERSION}"
-
     # 下载 NJS 源码
     njs_url="https://hg.nginx.org/njs/archive/tip.tar.gz"
     download_file "$njs_url" "njs"
@@ -121,31 +126,24 @@ download_source() {
 
 # 安装 OpenResty
 install_openresty() {
-    set_variables
-
     if ! cd "${INSTALL_DIR}"; then
         echo "进入目录 OpenResty 源码目录失败。"
         exit 1
     fi
-
     # 配置
     configure_openresty
-
     # 编译并安装
     echo "*******************     开始编译     **********************"
     make -j "$THREADS"
     echo "*******************     开始安装     **********************"
     make install
-    make distclean
-
+    make clean
     # 添加启动项管理
     create_systemd_service
-
     # 备份配置
     echo "*******************     备份文件     **********************"
     sudo mkdir -p /etc/nginx/bak
     mv /etc/nginx/nginx.conf /etc/nginx/bak/nginx.conf.bak
-
     # 下载新的配置文件
     echo "*******************     使用新的配置文件     **********************"
     wget -O /etc/nginx/nginx.conf https://gitee.com/archiguru/automatic/raw/main/app/openresty/nginx.conf
@@ -157,7 +155,6 @@ install_openresty() {
 
     # 添加 proxy.conf 配置
     create_proxy_conf
-
     # 配置 logrotate
     configure_logrotate
 
@@ -166,7 +163,6 @@ install_openresty() {
 
     # 设置权限
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} /var/www/ /var/log/nginx/ /var/cache/nginx/ /etc/nginx/ /etc/logrotate.d/nginx /usr/local/nginx/ /usr/lib/nginx/
-
     # 重载配置
     ldconfig
     echo "*******************     启动 nginx 服务     **********************"
@@ -293,6 +289,22 @@ ${WEB_DIR}/*nginx.log {
 EOF
 }
 
+# 定义成功提示
+success_message="
+
+
+
+  _____ _    _  _____ _____ ______  _____ _____
+ / ____| |  | |/ ____/ ____|  ____|/ ____/ ____|
+| (___ | |  | | |   | |    | |__  | (___| (___
+ \___ \| |  | | |   | |    |  __|  \___ \\___ \
+ ____) | |__| | |___| |____| |____ ____) |___) |
+|_____/ \____/ \_____\_____|______|_____/_____/
+
+
+
+"
+
 # 完成后提示
 done_tips() {
     echo ""
@@ -316,19 +328,46 @@ done_tips() {
 
 # 主安装函数
 main() {
+    echo "欢迎使用 OpenResty 安装脚本"
+    echo "请选择操作："
+    echo "1. 安装/重新安装"
+    echo "2. 卸载"
+    read -p "请输入选项（1/2）: " choice
+
+    case $choice in
+    1)
+        echo "开始安装..."
+        ;;
+    2)
+        echo "开始卸载..."
+        cleanup
+        terminate_apt_process
+        sudo apt autoremove -y
+        echo "OpenResty 卸载完成"
+        exit 0
+        ;;
+    *)
+        echo "无效的选项，请重新运行脚本并输入正确的选项。"
+        exit 1
+        ;;
+    esac
+
+    # 执行安装操作
     if command -v nginx &>/dev/null; then
         echo "Nginx 已安装，开始卸载..."
         cleanup
+        terminate_apt_process
         sudo apt autoremove -y
         echo "Nginx 卸载完成"
     else
         echo "Nginx 未安装，无需清理"
     fi
-    set_variables
+    echo "预检查"
     pre_check
     create_user_group
     download_source
     install_openresty
+    echo "$success_message"
     done_tips
     exit 0
 }
