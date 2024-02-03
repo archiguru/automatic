@@ -1,34 +1,53 @@
 #!/bin/bash
+#****************************************
+# Author: ArchiGuru
+# Created Time :2024-01-30 16:34
+# File Name: initialie.sh
+# Description: 
+#****************************************
 
-# 设置仓库的名称
-repo_name="automatic"
+# 定义全局变量 git_url
 
-# 判断操作系统的类型
-if [ "$(uname)" == "Darwin" ]; then
-    # 如果是 Mac OS，就使用当前目录作为仓库路径
-    repo=$(pwd)
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    # 如果是 Linux，就使用 /opt/src/ 下的仓库名称作为仓库路径
-    repo="/opt/src/$repo_name/"
+git_url=""
+
+choose_platform() {
+    echo "请选择使用的代码托管平台："
+    echo "1. GitHub"
+    echo "2. Gitee"
+
+    read -p "请输入选项的数字编号：" choice
+    case $choice in
+    1) git_url="git@github.com" ;;
+    2) git_url="git@gitee.com" ;;
+    *) echo "无效的选项，请重新选择" && choose_platform ;;
+    esac
+}
+
+choose_platform
+
+if [[ "$git_url" != "git@github.com" && "$git_url" != "git@gitee.com" ]]; then
+    echo "Git URL无效。退出脚本。"
+    exit 1
 fi
 
-# 进入仓库目录，如果失败就退出
+echo "您选择的平台是：$git_url"
+
+gh_user="archiguru"
+gh_repo="archiguru"
+
+if [ "$(uname)" == "Darwin" ]; then
+    repo=$(pwd)
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    repo="/data/GitHub/$gh_repo/"
+fi
+
 cd $repo || exit
 
-# 显示当前的远程仓库地址
 git remote -v
-
-# 删除原有的 git 信息
 rm -rf .git
-
-# 重新初始化 git
 git init
-
-# 添加远程仓库地址，使用 gitee.com 上的仓库
-git remote add origin "git@gitee.com:archiguru/$repo_name.git"
-
-# 添加所有文件并提交，使用 "first commit" 作为提交信息
+#git branch -m "main"
+git remote add origin $git_url:$gh_user/$gh_repo.git
 git add -A && git commit -m "first commit"
-
-# 强制推送到远程仓库的 main 分支，覆盖原有的内容
 git push -u origin main --force
+exit 0
