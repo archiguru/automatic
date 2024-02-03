@@ -3,9 +3,12 @@
 # 默认邮箱地址
 ACME_DEFAULT_EMAIL="jonny6015@163.com"
 
+read -p "请输入您的 TencentCloud API SecretId:" secret_id
+read -p "请输入您的 TencentCloud API SecretKey:" secret_key
+
 # DNSTencent API 密钥
-export Tencent_SecretId="AKIDulX8cE77384uhMxa8cvJe1FKKHGFLPct"
-export Tencent_SecretKey="RApZFqImDjR5jUQTOE1rmmgMzZ1dKByi"
+export Tencent_SecretId="$secret_id"
+export Tencent_SecretKey="$secret_key"
 
 # Nginx SSL 目录
 NGINX_SSL_DIR="/etc/nginx/ssl"
