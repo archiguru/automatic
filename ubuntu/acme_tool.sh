@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # 默认邮箱地址
-DEFAULT_EMAIL="jonny6015@163.com"
+ACME_DEFAULT_EMAIL="jonny6015@163.com"
 
 # DNSTencent API 密钥
-export Tencent_SecretId="AKshddggffstj7384uhMxa8cvJe1xscsdfggj"
-export Tencent_SecretKey="RApZhdnueduhffhOE1rmmbbffhhdvjt"
+export Tencent_SecretId="AKIDulX8cE77384uhMxa8cvJe1FKKHGFLPct"
+export Tencent_SecretKey="RApZFqImDjR5jUQTOE1rmmgMzZ1dKByi"
 
 # Nginx SSL 目录
 NGINX_SSL_DIR="/etc/nginx/ssl"
@@ -13,8 +13,8 @@ NGINX_SSL_DIR="/etc/nginx/ssl"
 # 安装 acme.sh
 install_acme() {
     echo "正在安装 acme.sh..."
-    read -p "请输入您的邮箱地址 [$DEFAULT_EMAIL]: " email
-    email="${email:-$DEFAULT_EMAIL}"
+    read -p "请输入您的邮箱地址 [$ACME_DEFAULT_EMAIL]: " email
+    email="${email:-$ACME_DEFAULT_EMAIL}"
     curl https://get.acme.sh | ACME_EMAIL=$email sh
     # echo "使用 systemd 管理："
     #     cat >"/etc/systemd/system/acme_letsencrypt.service" <<EOF

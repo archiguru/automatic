@@ -149,9 +149,12 @@ install_openresty() {
     wget -O /etc/nginx/nginx.conf https://gitee.com/archiguru/automatic/raw/main/app/openresty/nginx.conf
 
     echo "创建配置文件目录"
+    mkdir -p /etc/nginx/ssl/
+    mkdir -p /etc/nginx/streams-enabled/
+    mkdir -p /etc/nginx/streams-available/
     mkdir -p /etc/nginx/conf.d/
-    mkdir -p /etc/nginx/sites-available/
     mkdir -p /etc/nginx/sites-enabled/
+    mkdir -p /etc/nginx/sites-available/
 
     # 添加 proxy.conf 配置
     create_proxy_conf

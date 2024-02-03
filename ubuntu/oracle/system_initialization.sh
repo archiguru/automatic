@@ -24,7 +24,7 @@ sudo cp -rf /etc/update-motd.d /etc//update-motd.d.backup
 sudo rm -rf /etc/update-motd.d/*
 sudo NEEDRESTART_MODE=a apt-get dist-upgrade --yes
 sudo apt-get update -y
-sudo apt-get install build-essential ufw zsh screen zip unzip wget rsync bzip2 lsof telnet git tree htop vim net-tools universal-ctags apt-transport-https ca-certificates curl software-properties-common gcc gcc-11-locales debian-keyring autoconf automake make libtool flex bison gdb bzr libgd-tools expect lrzsz chrony gsmartcontrol hwloc psmisc -y
+sudo apt-get install build-essential ufw cron socat zsh screen zip unzip wget rsync bzip2 lsof telnet git tree htop vim net-tools universal-ctags apt-transport-https ca-certificates curl software-properties-common gcc gcc-11-locales debian-keyring autoconf automake make libtool flex bison gdb bzr libgd-tools expect lrzsz chrony gsmartcontrol hwloc psmisc -y
 sudo ufw disable
 timedatectl set-local-rtc 1
 timedatectl set-timezone Asia/Shanghai
