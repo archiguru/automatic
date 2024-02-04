@@ -23,8 +23,7 @@ sudo systemctl restart sshd.service
 sudo cp -rf /etc/update-motd.d /etc//update-motd.d.backup
 sudo rm -rf /etc/update-motd.d/*
 sudo NEEDRESTART_MODE=a apt-get dist-upgrade --yes
-sudo apt-get update -y
-sudo apt-get install build-essential ufw cron socat zsh screen zip unzip wget rsync bzip2 lsof telnet git tree htop vim net-tools universal-ctags apt-transport-https ca-certificates curl software-properties-common gcc gcc-11-locales debian-keyring autoconf automake make libtool flex bison gdb bzr libgd-tools expect lrzsz chrony gsmartcontrol hwloc psmisc -y
+sudo apt-get update -y && sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common build-essential gcc gcc-11-locales autoconf automake make libtool flex bison git bzr libgd-tools expect lrzsz zip unzip bzip2 zsh screen wget rsync lsof telnet tree htop vim net-tools universal-ctags gnupg2 jq cron socat gdb chrony gsmartcontrol hwloc psmisc debian-keyring
 sudo ufw disable
 timedatectl set-local-rtc 1
 timedatectl set-timezone Asia/Shanghai
@@ -47,17 +46,13 @@ EOF
 cd /bin
 ln -sf bash sh
 
-# 开启或清除iptables
 sudo iptables -P INPUT ACCEPT
 sudo iptables -P FORWARD ACCEPT
 sudo iptables -P OUTPUT ACCEPT
 sudo iptables -F
 sudo apt-get purge netfilter-persistent -y
 
-# 然后停用防火墙
-
 sudo systemctl stop firewalld
 sudo systemctl disable firewalld
 
-# 直接删除iptables规则
 sudo rm -rf /etc/iptables && reboot
