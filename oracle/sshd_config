@@ -1,0 +1,63 @@
+# 默认 ssh 端口，生产环境中建议改成五位数的端口
+Port 22822
+# ssh 所使用的私钥路径
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+# 设定在记录来自 sshd 的消息的时候，是否给出 "facility code"
+SyslogFacility AUTHPRIV
+
+# 是否允许 root 账户 ssh 登录
+PermitRootLogin yes
+# 设置 ssh 在接收登录请求之前是否检查用户根目录和 rhosts 文件的权限和所有权，建议开启
+StrictModes yes
+# 是否开启公钥验证
+PubkeyAuthentication yes
+# 公钥验证文件路径
+AuthorizedKeysFile .ssh/authorized_keys
+# 是否在 RhostsRSAAuthentication 或 HostbasedAuthentication 过程中忽略用户的 ~/.ssh/known_hosts 文件
+IgnoreUserKnownHosts yes
+# 是否在 RhostsRSAAuthentication 或 HostbasedAuthentication 过程中忽略 .rhosts 和 .shosts 文件
+IgnoreRhosts yes
+# 是否允许密码验证，生产环境中建议改成no，只用密钥登录
+PasswordAuthentication yes
+# 是否允许质疑-应答(challenge-response)认证
+ChallengeResponseAuthentication no
+# 是否允许基于 GSSAPI 的身份验证
+GSSAPIAuthentication yes
+# 是否在用户退出登录后自动销毁用户凭证缓存
+GSSAPICleanupCredentials no
+# 是否通过PAM验证
+UsePAM yes
+# 是否允许X11转发
+X11Forwarding yes
+# 是否允许 TCP 转发
+AllowTcpForwarding yes
+# 是否允许远程主机连接本地的转发端口
+GatewayPorts yes
+# 是否允许用户打印 /etc/motd 文件的内容
+PrintMotd no
+# 是否允许在每一次交互式登录时打印最后一位用户的登录时间
+PrintLastLog no
+# 指定系统是否向客户端发送 TCP keepalive 消息
+TCPKeepAlive yes
+# 是否在交互式会话的登录过程中使用 login
+UseLogin yes
+# 是否在交互式会话的登录过程中使用
+UseLogin yes
+# 长时间没有收到客户端的任何数据，不发送 "alive" 消息
+ClientAliveInterval 60
+# 在未收到任何客户端回应前最多允许发送多个 "alive" 消息，默认值是
+ClientAliveCountMax 7200
+# 是否允许 tun 设备转发
+PermitTunnel yes
+# 禁用将指定的文件中的内容在用户进行认证前显示给远程用户
+Banner none
+# DNS PTR 反向查询客户端主机名，开启会影响登录速度
+UseDNS no
+# 允许客户端通过环境变量指定的值
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
