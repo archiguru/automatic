@@ -10,6 +10,7 @@ hostnamectl
 cd /etc/
 sudo mv update-motd.d update-motd.d.bak
 sudo mkdir update-motd.d
+cd $HOME
 
 # ssh 配置
 cat <<EOF > /root/.ssh/authorized_keys
@@ -55,4 +56,7 @@ export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update -y
 sudo apt-get -yq upgrade
 sudo update-grub
+
+cd $HOME
+curl -sS -o ${HOME}/tcpx.sh https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcpx.sh
 sudo reboot
