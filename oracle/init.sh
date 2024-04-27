@@ -1,5 +1,6 @@
 #!/bin/bash
 # 使用方法：
+#    export SSH_PUB_KEY="ssh-ed25519 AAAAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx MacBot"
 #    sudo bash -c "$(curl -fsSL https://gitee.com/archiguru/automatic/raw/main/oracle/init.sh)"
 sudo -i
 # needrestart 删除
@@ -93,7 +94,7 @@ fi
 
 # 创建 /home/ubuntu/.ssh/authorized_keys 文件并添加密钥
 sudo cat >"/home/ubuntu/.ssh/authorized_keys" <<EOF
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB5AKSY8s8J5gq+XRhN46ccIBKt9TSk4XC+1o+UjwzPt MacBot
+${SSH_PUB_KEY}
 EOF
 
 # 检查/root/.ssh/文件夹是否存在，如果不存在则创建
@@ -103,7 +104,7 @@ fi
 
 # 创建 /root/.ssh/authorized_keys 文件并添加密钥
 sudo cat >"/root/.ssh/authorized_keys" <<EOF
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB5AKSY8s8J5gq+XRhN46ccIBKt9TSk4XC+1o+UjwzPt MacBot
+${SSH_PUB_KEY}
 EOF
 
 # 重启sshd服务
@@ -149,10 +150,9 @@ content=$(curl -s https://golang.google.cn/dl/)
 # 解析内容以提取版本号
 go_version=$(echo "$content" | grep -oP 'go[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 # clean_go_version=$(echo $go_version | cut -c3-)
-echo "最新的 GoLang 版本是：$go_version"
-
 wget https://go.dev/dl/${go_version}.linux-arm64.tar.gz
 sudo rm -rf /usr/local/go && tar -C /usr/local -xzf ${go_version}.linux-arm64.tar.gz
+sudo rm -rf *.linux-arm64.tar.gz
 
 # 设置本地RTC时间为本地时间
 timedatectl set-local-rtc 1
