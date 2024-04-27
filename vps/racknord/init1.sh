@@ -1,8 +1,8 @@
 #!/bin/bash
 # 设置系统的主机名
-hostnamectl set-hostname laika-kr.eoysky.com
+hostnamectl set-hostname racknord-us.eoysky.com
 # 设置系统的美化主机名
-hostnamectl set-hostname "Archiguru's laika-kr Computer" --pretty
+hostnamectl set-hostname "Archiguru's racknord-us Computer" --pretty
 # 显示当前的系统信息，包括主机名
 hostnamectl
 
@@ -31,7 +31,7 @@ curl -sS -o /usr/local/bin/toolbox.sh https://kejilion.pro/kejilion.sh && chmod 
 
 # 安装常用工具
 sudo apt-get update -y
-sudo apt-get install -y htop curl wget vim tree screenfetch tmux zsh rsync docker nmap ufw gcc clang make cmake autoconf automake
+sudo apt-get install -y git htop curl wget vim tree screenfetch tmux zsh rsync docker nmap ufw gcc clang make cmake autoconf automake
 sudo apt-get autoremove -y && echo "命令行工具安装完成。"
 
 # 配置 zsh
