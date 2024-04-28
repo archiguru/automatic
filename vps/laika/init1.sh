@@ -12,8 +12,10 @@ sudo mv update-motd.d update-motd.d.bak
 sudo mkdir update-motd.d
 cd $HOME
 
+mkdir $HOME/.ssh/
+touch $HOME/home/archiguru/.ssh/authorized_keys
 # ssh 配置
-cat <<EOF > /root/.ssh/authorized_keys
+cat <<EOF > $HOME/.ssh/authorized_keys
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJQ8ZoDx2u6lbkkIqsQOBbvf6AuiFpc5pZhFI6om4xo1 iPhone
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMT5NVu9cHINNx0BgCUVSSXKa/mUzLKe42dathsxcQYu macOS
 EOF
